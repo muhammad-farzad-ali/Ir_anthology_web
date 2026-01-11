@@ -1,5 +1,3 @@
-import "../App.css";
-
 function FilterChips({ filters = {}, onRemove, onHover, onHoverLeave }) {
   const entries = Object.entries(filters || {});
   const hasFilters = entries.some(
@@ -9,22 +7,24 @@ function FilterChips({ filters = {}, onRemove, onHover, onHoverLeave }) {
   if (!hasFilters) return null;
 
   return (
-    <div className="filter-chips">
+    <div className="flex flex-col gap-3 mb-3">
       {entries.map(([key, values]) => (
-        <div className="filter-group" key={key}>
-          <span className="filter-label">{key}:</span>
-          <div className="chip-row" id={`filter-chips-${key}`}>
+        <div className="flex gap-2.5 items-start" key={key}>
+          <span className="capitalize font-semibold text-gray-900 pt-1.5">
+            {key}:
+          </span>
+          <div className="flex flex-wrap gap-2" id={`filter-chips-${key}`}>
             {(values || []).map((value) => (
               <button
                 key={`${key}-${value}`}
-                className="chip"
+                className="inline-flex items-center gap-1.5 border-none bg-gray-100 text-gray-900 rounded-full py-1.5 px-3 cursor-pointer text-sm hover:bg-gray-200"
                 onClick={() => onRemove(key, value)}
                 onMouseOver={() => onHover?.(key, value)}
                 onMouseLeave={onHoverLeave}
               >
                 <span>{value}</span>
                 <svg
-                  className="chip-icon"
+                  className="w-3.5 h-3.5 text-gray-500"
                   viewBox="0 0 20 20"
                   fill="currentColor"
                   aria-hidden

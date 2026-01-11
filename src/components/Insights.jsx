@@ -1,5 +1,3 @@
-import "../App.css";
-
 function Insights({ comments = [], suggestions = [], onSuggestionClick }) {
   const hasComments = comments && comments.length > 0;
   const hasSuggestions = suggestions && suggestions.length > 0;
@@ -10,15 +8,15 @@ function Insights({ comments = [], suggestions = [], onSuggestionClick }) {
     text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
 
   return (
-    <div className="insights">
+    <div className="flex flex-col gap-5">
       {hasComments && (
-        <div className="insight-block">
-          <h2 className="insight-title">Observations</h2>
-          <ul className="insight-list">
+        <div className="flex flex-col gap-3">
+          <h2 className="m-0 text-sm font-bold text-slate-900">Observations</h2>
+          <ul className="list-none p-0 m-0 border-t border-gray-200">
             {comments.map((comment, idx) => (
               <li
                 key={`comment-${idx}`}
-                className="insight-item"
+                className="py-3 px-3 border-b border-gray-200 text-sm text-gray-900"
                 dangerouslySetInnerHTML={{
                   __html: formatMarkdownBold(comment),
                 }}
@@ -29,14 +27,19 @@ function Insights({ comments = [], suggestions = [], onSuggestionClick }) {
       )}
 
       {hasSuggestions && (
-        <div className="insight-block">
-          <h2 className="insight-title">Follow-up Questions</h2>
-          <ul className="insight-list">
+        <div className="flex flex-col gap-3">
+          <h2 className="m-0 text-sm font-bold text-slate-900">
+            Follow-up Questions
+          </h2>
+          <ul className="list-none p-0 m-0 border-t border-gray-200">
             {suggestions.map((suggestion, idx) => (
-              <li key={`suggestion-${idx}`} className="insight-item">
+              <li
+                key={`suggestion-${idx}`}
+                className="py-3 px-3 border-b border-gray-200 text-sm text-gray-900"
+              >
                 <a
                   href="#"
-                  className="suggestion-link"
+                  className="flex gap-2 text-slate-900 no-underline hover:text-gray-800 hover:bg-gray-50"
                   onClick={(e) => {
                     e.preventDefault();
                     onSuggestionClick?.(suggestion);

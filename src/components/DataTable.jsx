@@ -1,10 +1,8 @@
-import "../App.css";
-
 function getSortArrow(header, isActive, order) {
   if (!isActive) {
     return (
       <svg
-        className="sort-icon inactive"
+        className="w-3.5 h-3.5 text-gray-400"
         viewBox="0 0 20 20"
         fill="currentColor"
         aria-hidden
@@ -21,7 +19,7 @@ function getSortArrow(header, isActive, order) {
   if (order === "asc") {
     return (
       <svg
-        className="sort-icon"
+        className="w-3.5 h-3.5 text-slate-900"
         viewBox="0 0 20 20"
         fill="currentColor"
         aria-hidden
@@ -37,7 +35,7 @@ function getSortArrow(header, isActive, order) {
 
   return (
     <svg
-      className="sort-icon"
+      className="w-3.5 h-3.5 text-slate-900"
       viewBox="0 0 20 20"
       fill="currentColor"
       aria-hidden
@@ -67,17 +65,17 @@ function DataTable({
   onGroupHover,
 }) {
   if (!result || result.length === 0) {
-    return <div className="table-empty">Loading data...</div>;
+    return <div className="text-sm text-gray-500">Loading data...</div>;
   }
 
   const headers = Object.keys(result[0] || {});
 
   return (
-    <div className="table-wrapper">
-      <div className="table-header">
-        <table className="table-fixed">
+    <div className="w-full">
+      <div className="overflow-hidden">
+        <table className="w-full border-collapse table-fixed">
           <thead>
-            <tr>
+            <tr className="border-b border-gray-200">
               {headers.map((header) => {
                 const isActive =
                   sorting?.order_by &&
@@ -93,14 +91,14 @@ function DataTable({
                     <th
                       key={header}
                       style={widthStyle}
-                      className="group-header"
+                      className="px-2 pb-2.5 align-bottom h-[100px] border-b border-gray-200"
                     >
-                      <div className="group-header-inner">
+                      <div className="flex items-center gap-2">
                         <button
                           onClick={() => onGroupByClick(header)}
                           onMouseOver={() => onGroupHover?.(header)}
                           onMouseLeave={onCellHoverLeave}
-                          className="header-button"
+                          className="border-none bg-transparent text-slate-900 font-bold text-sm cursor-pointer hover:text-gray-900"
                           title={`Group by ${headerLabel}`}
                         >
                           {headerLabel}
@@ -109,7 +107,7 @@ function DataTable({
                           onClick={() => onSortClick(header)}
                           onMouseOver={() => onSortHover?.(header)}
                           onMouseLeave={onCellHoverLeave}
-                          className="sort-button"
+                          className="border-none bg-transparent p-1 rounded-lg cursor-pointer hover:bg-gray-100"
                           title={`Sort by ${headerLabel}`}
                         >
                           {getSortArrow(header, isActive, sorting?.order)}
@@ -117,14 +115,14 @@ function DataTable({
                         {selectedGroupedValues?.size > 0 && (
                           <button
                             onClick={onAddSelectedToFilters}
-                            className="add-selected"
+                            className="bg-gray-900 text-white border-none py-1 px-2 rounded-lg text-xs cursor-pointer hover:bg-[#0b1224]"
                             title="Add selected to filters"
                           >
                             Add ({selectedGroupedValues.size})
                           </button>
                         )}
                         {groupBy && (
-                          <span className="result-count">
+                          <span className="text-xs text-gray-600 font-semibold">
                             {result.length}{" "}
                             {result.length === 1 ? "result" : "results"}
                           </span>
@@ -138,14 +136,14 @@ function DataTable({
                   <th
                     key={header}
                     style={widthStyle}
-                    className="vertical-header"
+                    className="px-1.5 pb-2.5 align-bottom h-[100px] border-b border-gray-200 relative"
                   >
-                    <div className="vertical-header-inner">
+                    <div className="absolute bottom-1.5 left-1.5 flex items-center gap-1 -rotate-[30deg] origin-bottom-left whitespace-nowrap">
                       <button
                         onClick={() => onGroupByClick(header)}
                         onMouseOver={() => onGroupHover?.(header)}
                         onMouseLeave={onCellHoverLeave}
-                        className="header-button"
+                        className="border-none bg-transparent text-slate-900 font-bold text-sm cursor-pointer hover:text-gray-900"
                         title={`Group by ${headerLabel}`}
                       >
                         {headerLabel}
@@ -154,7 +152,7 @@ function DataTable({
                         onClick={() => onSortClick(header)}
                         onMouseOver={() => onSortHover?.(header)}
                         onMouseLeave={onCellHoverLeave}
-                        className="sort-button"
+                        className="border-none bg-transparent p-1 rounded-lg cursor-pointer hover:bg-gray-100"
                         title={`Sort by ${headerLabel}`}
                       >
                         {getSortArrow(header, isActive, sorting?.order)}
@@ -168,8 +166,8 @@ function DataTable({
         </table>
       </div>
 
-      <div className="table-body">
-        <table className="table-fixed">
+      <div className="max-h-96 overflow-y-auto">
+        <table className="w-full border-collapse table-fixed">
           <tbody>
             {result.map((row, rowIndex) => (
               <tr key={rowIndex}>
@@ -187,13 +185,13 @@ function DataTable({
                       <td
                         key={`${rowIndex}-${header}`}
                         style={widthStyle}
-                        className="group-cell"
+                        className="py-3 px-2 text-sm text-gray-900 align-top border-b border-gray-200 hover:bg-slate-50"
                         onMouseOver={() =>
                           onCellHover?.(header, cellValue, row)
                         }
                         onMouseLeave={onCellHoverLeave}
                       >
-                        <div className="group-cell-inner">
+                        <div className="flex items-center gap-2 cursor-pointer">
                           <input
                             type="checkbox"
                             checked={Boolean(isChecked)}
@@ -218,7 +216,7 @@ function DataTable({
                     <td
                       key={`${rowIndex}-${header}`}
                       style={widthStyle}
-                      className="cell"
+                      className="py-3 px-2 text-sm text-gray-900 align-top cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap border-b border-gray-200 hover:bg-slate-50"
                       onClick={() => onCellClickWithRow(header, cellValue, row)}
                       onMouseOver={() => onCellHover?.(header, cellValue, row)}
                       onMouseLeave={onCellHoverLeave}

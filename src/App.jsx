@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import "./App.css";
 import { postHoverEvent, postState } from "./api";
 import EditorBar from "./components/EditorBar";
 import FilterChips from "./components/FilterChips";
@@ -376,58 +375,64 @@ function App() {
   }, []);
 
   return (
-    <div className="app-shell">
-      <EditorBar
-        value={questionDraft}
-        onChange={setQuestionDraft}
-        onSubmit={async () => {
-          if (!questionDraft.trim()) return;
-          const nextState = { ...appState, question: questionDraft.trim() };
-          setAppState(nextState);
-          await syncState(nextState);
-        }}
-        isSyncing={isSyncing}
-        hoverEnabled={hoverEffectsEnabled}
-        onToggleHover={toggleHoverEffects}
-      />
+    <div className="w-full flex justify-center font-['Inter',-apple-system,BlinkMacSystemFont,'Segoe_UI',sans-serif] leading-6 font-normal text-slate-900 bg-neutral-200">
+      <div className="w-[92%] md:w-4/5 max-w-[1200px] pt-8 pb-12">
+        <EditorBar
+          value={questionDraft}
+          onChange={setQuestionDraft}
+          onSubmit={async () => {
+            if (!questionDraft.trim()) return;
+            const nextState = { ...appState, question: questionDraft.trim() };
+            setAppState(nextState);
+            await syncState(nextState);
+          }}
+          isSyncing={isSyncing}
+          hoverEnabled={hoverEffectsEnabled}
+          onToggleHover={toggleHoverEffects}
+        />
 
-      {error && <div className="error-banner">{error}</div>}
+        {error && (
+          <div className="bg-red-100 text-red-800 border border-red-300 rounded-xl py-3 px-3.5 mb-3 text-sm">
+            {error}
+          </div>
+        )}
 
-      {shouldShowData && (
-        <div className="card data-card">
-          <FilterChips
-            filters={appState.filters}
-            onRemove={removeFilterChip}
-            onHover={handleFilterHover}
-            onHoverLeave={restoreOriginalQuestion}
-          />
-          <DataTable
-            result={appState.result}
-            groupBy={appState.group_by}
-            sorting={appState.sorting}
-            selectedGroupedValues={selectedGroupedValues}
-            onToggleGroupedValue={toggleGroupedValue}
-            onAddSelectedToFilters={addSelectedToFilters}
-            onGroupByClick={handleGroupByClick}
-            onSortClick={handleSortClick}
-            onCellClickWithRow={handleCellClickWithRow}
-            onCellHover={handleCellHover}
-            onCellHoverLeave={restoreOriginalQuestion}
-            onSortHover={handleSortHover}
-            onGroupHover={handleGroupByHover}
-          />
-        </div>
-      )}
+        {shouldShowData && (
+          <div className="bg-white rounded-2xl shadow-[0_10px_25px_rgba(15,23,42,0.08)] px-6 pt-6 pb-3 mb-[18px]">
+            <FilterChips
+              filters={appState.filters}
+              onRemove={removeFilterChip}
+              onHover={handleFilterHover}
+              onHoverLeave={restoreOriginalQuestion}
+            />
+            <DataTable
+              result={appState.result}
+              groupBy={appState.group_by}
+              sorting={appState.sorting}
+              selectedGroupedValues={selectedGroupedValues}
+              onToggleGroupedValue={toggleGroupedValue}
+              onAddSelectedToFilters={addSelectedToFilters}
+              onGroupByClick={handleGroupByClick}
+              onSortClick={handleSortClick}
+              onCellClickWithRow={handleCellClickWithRow}
+              onCellHover={handleCellHover}
+              onCellHoverLeave={restoreOriginalQuestion}
+              onSortHover={handleSortHover}
+              onGroupHover={handleGroupByHover}
+            />
+          </div>
+        )}
 
-      {shouldShowInsights && (
-        <div className="card insights-card">
-          <Insights
-            comments={appState.comments}
-            suggestions={appState.suggestions}
-            onSuggestionClick={handleSuggestionClick}
-          />
-        </div>
-      )}
+        {shouldShowInsights && (
+          <div className="bg-white rounded-2xl shadow-[0_10px_25px_rgba(15,23,42,0.08)] p-6 mb-[18px]">
+            <Insights
+              comments={appState.comments}
+              suggestions={appState.suggestions}
+              onSuggestionClick={handleSuggestionClick}
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 }

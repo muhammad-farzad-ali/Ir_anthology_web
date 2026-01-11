@@ -1,5 +1,4 @@
 import { useEffect, useRef } from "react";
-import "../App.css";
 
 function EditorBar({
   value,
@@ -30,10 +29,13 @@ function EditorBar({
   };
 
   return (
-    <div className="search-box">
-      <button className="icon-button" aria-label="Add">
+    <div className="sticky top-0 z-40 grid grid-cols-[1fr_auto] md:grid-cols-[auto_1fr_auto] grid-rows-[auto_auto] md:grid-rows-1 gap-y-2 md:gap-y-0 items-center gap-x-2.5 p-3 mx-auto mb-5 bg-neutral-100 rounded-[28px] shadow-[0_8px_18px_rgba(0,0,0,0.08)]">
+      <button
+        className="h-9 w-9 border-none rounded-full flex items-center justify-center bg-transparent text-gray-500 cursor-pointer hover:bg-black/5 hidden md:flex"
+        aria-label="Add"
+      >
         <svg
-          className="icon"
+          className="h-5 w-5"
           viewBox="0 0 20 20"
           fill="currentColor"
           aria-hidden
@@ -46,10 +48,10 @@ function EditorBar({
         </svg>
       </button>
 
-      <div className="search-input">
+      <div className="max-h-52 overflow-y-auto col-span-2 md:col-span-1">
         <textarea
           ref={textareaRef}
-          className="composer"
+          className="w-full border-none bg-transparent resize-none text-base leading-6 text-slate-900 outline-none py-1 px-2 placeholder:text-gray-400"
           placeholder="Ask anything"
           value={value}
           onChange={handleInput}
@@ -58,9 +60,13 @@ function EditorBar({
         />
       </div>
 
-      <div className="search-actions">
+      <div className="flex items-center gap-2">
         <button
-          className={`toggle-hover ${hoverEnabled ? "active" : ""}`}
+          className={`border rounded-[10px] py-1.5 px-2.5 cursor-pointer text-[13px] ${
+            hoverEnabled
+              ? "bg-gray-900 text-white border-gray-900"
+              : "border-neutral-300 bg-white text-gray-900"
+          }`}
           type="button"
           onClick={onToggleHover}
           title="Toggle hover effects"
@@ -69,13 +75,13 @@ function EditorBar({
         </button>
         <button
           aria-label="Send"
-          className="send-button"
+          className="h-9 w-9 border-none rounded-full bg-slate-900 text-white flex items-center justify-center cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
           type="button"
           onClick={onSubmit}
           disabled={!value.trim() || isSyncing}
         >
           <svg
-            className="icon"
+            className="h-5 w-5"
             viewBox="0 0 20 20"
             fill="currentColor"
             aria-hidden

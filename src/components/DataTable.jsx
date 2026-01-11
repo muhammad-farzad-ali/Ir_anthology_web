@@ -144,7 +144,7 @@ function DataTable({
                   <th
                     key={header}
                     style={widthStyle}
-                    className="px-1.5 pb-2.5 align-bottom h-[100px] border-b border-gray-200 relative"
+                    className="px-2 pb-2.5 align-bottom h-[100px] border-b border-gray-200 relative"
                   >
                     <div className="absolute bottom-1.5 left-1.5 flex items-center gap-1 -rotate-[30deg] origin-bottom-left whitespace-nowrap">
                       <button

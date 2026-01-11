@@ -5,54 +5,75 @@ import FilterChips from "./components/FilterChips";
 import DataTable from "./components/DataTable";
 import Insights from "./components/Insights";
 
+// Initial state structure for the application
+// This defines the data structure sent to/received from the backend
 const initialAppState = {
-  question: "",
-  filters: {},
-  group_by: null,
+  question: "", // User's query text
+  filters: {}, // Active filters (e.g., {authors: ["John Doe"], years: [2020]})
+  group_by: null, // Column to group results by
   sorting: {
-    order_by: null,
-    order: "asc",
-    limit: 10,
-    offset: 0,
+    order_by: null, // Column to sort by
+    order: "asc", // Sort direction: "asc" or "desc"
+    limit: 10, // Number of results to display
+    offset: 0, // Pagination offset
   },
-  comments: [],
-  suggestions: [],
-  result: [],
+  comments: [], // Backend-generated observations about the data
+  suggestions: [], // Backend-generated follow-up question suggestions
+  result: [], // Query results (array of data objects)
 };
 
+// Initial hover state structure
+// Used to track what element the user is hovering over to generate contextual questions
 const initialHoverState = {
   cellHover: {
-    columnName: "",
-    cellValue: "",
-    groupByColumn: "",
-    groupByValue: "",
+    columnName: "", // The column being hovered
+    cellValue: "", // The value of the cell being hovered
+    groupByColumn: "", // Current groupBy column (if any)
+    groupByValue: "", // The groupBy value for this row
   },
   filterHover: {
-    filterName: "",
-    filterValue: "",
+    filterName: "", // Filter category being hovered (e.g., "authors")
+    filterValue: "", // Specific filter value being hovered
   },
   sortingHover: {
-    columnName: "",
-    arrowPosition: "",
+    columnName: "", // Column whose sort button is being hovered
+    arrowPosition: "", // Current sort state: "asc", "desc", or "neutral"
   },
   groupbyHover: {
-    columnName: "",
+    columnName: "", // Column whose groupBy button is being hovered
   },
 };
 
 function App() {
+  // Main application state synced with backend
   const [appState, setAppState] = useState(initialAppState);
+
+  // Local draft of the question being edited (not yet submitted)
   const [questionDraft, setQuestionDraft] = useState("");
+
+  // Set of selected checkbox values in grouped view (for batch operations)
   const [selectedGroupedValues, setSelectedGroupedValues] = useState(
     () => new Set()
   );
+
+  // Toggle for hover effects feature (shows dynamic questions on hover)
   const [hoverEffectsEnabled, setHoverEffectsEnabled] = useState(false);
+
+  // Current hover state to track what element is being hovered
   const [hoverState, setHoverState] = useState(initialHoverState);
+
+  // Loading state during API calls
   const [isSyncing, setIsSyncing] = useState(false);
+
+  // Error message to display to user
   const [error, setError] = useState("");
+
+  // Refs to access latest state in callbacks without re-creating them
   const appStateRef = useRef(initialAppState);
   const isSyncingRef = useRef(false);
 
+  // Check if any filters are active (at least one filter array has values)
+  // Memoized to avoid recalculating on every render
   const hasActiveFilters = useMemo(
     () =>
       appState.filters &&
@@ -62,7 +83,10 @@ function App() {
     [appState.filters]
   );
 
+  // Show data table if filters are active OR if there are results
   const shouldShowData = hasActiveFilters || (appState.result?.length ?? 0) > 0;
+
+  // Show insights section if there are comments or suggestions from backend
   const shouldShowInsights =
     (appState.comments?.length ?? 0) > 0 ||
     (appState.suggestions?.length ?? 0) > 0;
@@ -94,15 +118,21 @@ function App() {
     [hoverEffectsEnabled, hoverState]
   );
 
+  // Handle hovering over a table cell
+  // Sends hover context to backend to generate a relevant question
   const handleCellHover = useCallback(
     (header, value, row) => {
       if (!hoverEffectsEnabled) return;
       resetHoverState();
+
+      // Convert groupBy key to match the capitalized row property (e.g., "authors" -> "Authors")
       const groupByKey = appState.group_by
         ? appState.group_by.charAt(0).toUpperCase() + appState.group_by.slice(1)
         : "";
       const groupedValue =
         groupByKey && row[groupByKey] ? row[groupByKey].toString() : "";
+
+      // Build hover state with cell context
       const nextHoverState = {
         ...initialHoverState,
         cellHover: {
@@ -176,21 +206,31 @@ function App() {
     [hoverEffectsEnabled, resetHoverState, sendHoverState]
   );
 
+  // Sync state with backend API
+  // Prevents concurrent sync requests using ref to avoid race conditions
   const syncState = useCallback(async (nextState) => {
+    // Guard: prevent multiple simultaneous sync operations
     if (isSyncingRef.current) return;
+
     isSyncingRef.current = true;
     setIsSyncing(true);
     setError("");
+
+    // Use provided state or fall back to current state from ref
     const payload = nextState || appStateRef.current;
     const { data, error: syncError } = await postState(payload);
+
+    // Update local state with backend response
     if (data) {
       setAppState(data);
       setQuestionDraft(data.question || "");
       appStateRef.current = data;
     }
+
     if (syncError) {
       setError(syncError);
     }
+
     setIsSyncing(false);
     isSyncingRef.current = false;
   }, []);
@@ -213,23 +253,34 @@ function App() {
     [appState, syncState]
   );
 
+  // Add selected checkboxes from grouped view to filters
+  // Converts the Set of selected values into filter arrays
   const addSelectedToFilters = useCallback(async () => {
     if (!appState.group_by || selectedGroupedValues.size === 0) return;
+
     const groupByKey = appState.group_by.toLowerCase();
     const nextFilters = { ...(appState.filters || {}) };
     const existing = nextFilters[groupByKey]
       ? [...nextFilters[groupByKey]]
       : [];
+
+    // Add each selected value to filters
     selectedGroupedValues.forEach((value) => {
       const numValue = Number(value);
+      // Special handling: convert year strings to numbers
       const filterValue =
         !Number.isNaN(numValue) && groupByKey === "years" ? numValue : value;
+
+      // Only add if not already in filters
       if (!existing.includes(filterValue)) {
         existing.push(filterValue);
       }
     });
+
     nextFilters[groupByKey] = existing;
     const nextState = { ...appState, filters: nextFilters };
+
+    // Clear selection after adding to filters
     setSelectedGroupedValues(new Set());
     setAppState(nextState);
     await syncState(nextState);
@@ -276,17 +327,26 @@ function App() {
     [appState, syncState]
   );
 
+  // Handle clicking on a table cell
+  // Complex logic: adds clicked value to filters AND preserves current group filter if switching groups
   const handleCellClickWithRow = useCallback(
     async (header, value, row) => {
+      // Ignore empty or zero values
       if (!value || value === "0") return;
+
       const filterKey = header.toLowerCase();
       const nextFilters = { ...(appState.filters || {}) };
 
+      // If we're grouped by a different column than the one clicked,
+      // also add the current row's group value to filters
+      // This preserves the current view context when drilling down
       if (appState.group_by && appState.group_by.toLowerCase() !== filterKey) {
         const currentGroupByKey = appState.group_by.toLowerCase();
         const groupByKeyCapitalized =
           appState.group_by.charAt(0).toUpperCase() +
           appState.group_by.slice(1);
+
+        // Find the group value in the row (handles different capitalizations)
         const currentGroupByValue =
           row[groupByKeyCapitalized] ??
           row[
@@ -298,10 +358,13 @@ function App() {
             ? [...nextFilters[currentGroupByKey]]
             : [];
           const numValue = Number(currentGroupByValue);
+          // Convert years to numbers for proper filtering
           const filterValue =
             !Number.isNaN(numValue) && currentGroupByKey === "years"
               ? numValue
               : currentGroupByValue;
+
+          // Add to filter if not already present
           if (
             !arr.map((v) => v?.toString()).includes(filterValue?.toString())
           ) {
@@ -311,12 +374,14 @@ function App() {
         }
       }
 
+      // Add the clicked cell value to filters
       const targetArray = nextFilters[filterKey]
         ? [...nextFilters[filterKey]]
         : [];
       const numValue = Number(value);
       const filterValue =
         !Number.isNaN(numValue) && filterKey === "years" ? numValue : value;
+
       if (
         !targetArray.map((v) => v?.toString()).includes(filterValue?.toString())
       ) {
@@ -324,6 +389,7 @@ function App() {
       }
       nextFilters[filterKey] = targetArray;
 
+      // Update state: add to filters AND change groupBy to clicked column
       const nextState = {
         ...appState,
         filters: nextFilters,
@@ -438,6 +504,8 @@ function App() {
         )}
       </div>
 
+      {/* Loading spinner overlay - shown during API requests */}
+      {/* pointer-events-none allows clicking through the spinner to the blurred content */}
       {isSyncing && (
         <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
           <div className="relative">

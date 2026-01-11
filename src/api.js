@@ -1,5 +1,6 @@
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8006";
 
+// Safely parse JSON response, returns null if parsing fails
 async function parseResponse(response) {
   try {
     const data = await response.json();
@@ -9,6 +10,8 @@ async function parseResponse(response) {
   }
 }
 
+// Send application state to backend and receive updated state
+// Returns: { data, error } - data contains updated state, error contains error message if any
 export async function postState(state) {
   try {
     const response = await fetch(`${BASE_URL}/state`, {
@@ -32,6 +35,8 @@ export async function postState(state) {
   }
 }
 
+// Send hover event to backend to generate contextual question
+// Returns: { data, error } - data contains { message: "generated question" }
 export async function postHoverEvent(hoverState) {
   try {
     const response = await fetch(`${BASE_URL}/hover_event`, {

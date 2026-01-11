@@ -2,8 +2,11 @@ function Insights({ comments = [], suggestions = [], onSuggestionClick }) {
   const hasComments = comments && comments.length > 0;
   const hasSuggestions = suggestions && suggestions.length > 0;
 
+  // Don't render if no insights available
   if (!hasComments && !hasSuggestions) return null;
 
+  // Convert markdown bold syntax (**text**) to HTML <strong> tags
+  // Used for rendering backend-generated formatted text
   const formatMarkdownBold = (text) =>
     text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
 

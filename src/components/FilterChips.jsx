@@ -1,9 +1,13 @@
 function FilterChips({ filters = {}, onRemove, onHover, onHoverLeave }) {
+  // Convert filters object to array of [key, values] pairs
   const entries = Object.entries(filters || {});
+
+  // Check if there are any active filters (at least one array with values)
   const hasFilters = entries.some(
     ([, values]) => Array.isArray(values) && values.length > 0
   );
 
+  // Don't render anything if no filters are active
   if (!hasFilters) return null;
 
   return (

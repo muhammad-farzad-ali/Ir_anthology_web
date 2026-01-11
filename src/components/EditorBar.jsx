@@ -10,6 +10,8 @@ function EditorBar({
 }) {
   const textareaRef = useRef(null);
 
+  // Auto-resize textarea based on content
+  // Resets height to auto, then sets it to scrollHeight to fit content
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
@@ -21,6 +23,7 @@ function EditorBar({
     onChange(e.target.value);
   };
 
+  // Submit on Cmd/Ctrl + Enter keyboard shortcut
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
       e.preventDefault();

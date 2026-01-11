@@ -1,4 +1,9 @@
+// Returns the appropriate sort arrow icon based on sort state
+// - Neutral (gray): column is not being sorted
+// - Up arrow: ascending sort
+// - Down arrow: descending sort
 function getSortArrow(header, isActive, order) {
+  // Neutral state: show double arrow (both up and down)
   if (!isActive) {
     return (
       <svg
@@ -72,6 +77,7 @@ function DataTable({
 
   return (
     <div className="w-full">
+      {/* Fixed header table - kept separate from body for styling */}
       <div className="overflow-hidden">
         <table className="w-full border-collapse table-fixed">
           <thead>
@@ -86,6 +92,7 @@ function DataTable({
                   header.charAt(0).toUpperCase() + header.slice(1);
                 const widthStyle = isGrouped ? { width: 150 } : { width: 10 };
 
+                // Grouped column: horizontal layout with Add button and result count
                 if (isGrouped) {
                   return (
                     <th
@@ -132,6 +139,7 @@ function DataTable({
                   );
                 }
 
+                // Non-grouped column: rotated -30deg label to save horizontal space
                 return (
                   <th
                     key={header}
@@ -166,6 +174,7 @@ function DataTable({
         </table>
       </div>
 
+      {/* Scrollable table body with max height */}
       <div className="max-h-96 overflow-y-auto">
         <table className="w-full border-collapse table-fixed">
           <tbody>
@@ -180,6 +189,7 @@ function DataTable({
                     cellValue?.toString()
                   );
 
+                  // Grouped column: render with checkbox for selection
                   if (isGrouped) {
                     return (
                       <td
@@ -212,6 +222,7 @@ function DataTable({
                     );
                   }
 
+                  // Regular (non-grouped) cell: clickable to add to filters
                   return (
                     <td
                       key={`${rowIndex}-${header}`}

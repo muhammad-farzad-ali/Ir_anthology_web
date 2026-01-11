@@ -216,7 +216,7 @@ function DataTable({
                     <td
                       key={`${rowIndex}-${header}`}
                       style={widthStyle}
-                      className="py-3 px-2 text-sm text-gray-900 align-top cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap border-b border-gray-200 hover:bg-slate-50"
+                      className="py-3 text-sm text-gray-900 align-top cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap border-b border-gray-200 hover:bg-slate-50"
                       onClick={() => onCellClickWithRow(header, cellValue, row)}
                       onMouseOver={() => onCellHover?.(header, cellValue, row)}
                       onMouseLeave={onCellHoverLeave}

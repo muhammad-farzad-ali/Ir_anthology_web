@@ -375,8 +375,12 @@ function App() {
   }, []);
 
   return (
-    <div className="w-full flex justify-center font-['Inter',-apple-system,BlinkMacSystemFont,'Segoe_UI',sans-serif] leading-6 font-normal text-slate-900 bg-neutral-200">
-      <div className="w-[92%] md:w-4/5 max-w-[1200px] pt-8 pb-12">
+    <div className="w-full flex justify-center font-['Inter',-apple-system,BlinkMacSystemFont,'Segoe_UI',sans-serif] leading-6 font-normal text-slate-900 bg-neutral-200 relative">
+      <div
+        className={`w-[92%] md:w-4/5 max-w-[1200px] pt-8 pb-12 ${
+          isSyncing ? "blur-sm" : ""
+        }`}
+      >
         <EditorBar
           value={questionDraft}
           onChange={setQuestionDraft}
@@ -433,6 +437,14 @@ function App() {
           </div>
         )}
       </div>
+
+      {isSyncing && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
+          <div className="relative">
+            <div className="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

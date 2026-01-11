@@ -1,0 +1,1294 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+      .custom_width {
+        width: 80% !important;
+        max-width: 80% !important;
+      }
+    </style>
+  </head>
+
+  <body class="bg-neutral-200 p-10 font-sans">
+    <!-- Search Box -->
+    <div
+      class="mx-auto mb-6 max-w-2xl grid grid-cols-[auto_1fr_auto] items-center gap-2 rounded-[28px] bg-neutral-100 p-2.5 shadow-md custom_width sticky top-0 z-40"
+      id="searchBox"
+    >
+      <!-- Leading -->
+      <button
+        class="flex h-9 w-9 items-center justify-center rounded-full hover:bg-black/5"
+        aria-label="Add"
+      >
+        <svg
+          class="mt-0.5 h-5 w-5 text-neutral-500"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z"
+            clip-rule="evenodd"
+          />
+        </svg>
+      </button>
+
+      <!-- Primary -->
+      <div class="max-h-52 overflow-y-auto">
+        <div
+          id="editor"
+          contenteditable
+          translate="no"
+          class="min-h-[2.5rem] px-2 py-1 text-neutral-900 outline-none leading-relaxed empty:before:content-['Ask_anything'] empty:before:text-neutral-400"
+        ></div>
+      </div>
+
+      <!-- Trailing -->
+      <button
+        id="sendBtn"
+        class="flex h-9 w-9 items-center justify-center rounded-full bg-black text-white hover:bg-black/90"
+        aria-label="Send"
+      >
+        <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path
+            d="M9 16V6.414L5.707 9.707a1 1 0 0 1-1.414-1.414l5-5a1 1 0 0 1 1.414 0l5 5a1 1 0 1 1-1.414 1.414L11 6.414V16a1 1 0 1 1-2 0Z"
+          />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Breadcrumbs -->
+    <!-- <nav
+      id="breadcrumbsNav"
+      class="mx-auto max-w-2xl mt-6 mb-6 custom_width"
+      aria-label="Breadcrumb"
+      style="display: none"
+    >
+      <ol
+        class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse"
+      >
+        <li class="inline-flex items-center">
+          <a
+            href="#"
+            class="inline-flex items-center text-sm font-medium text-neutral-700 hover:text-neutral-900"
+            aria-label="Home"
+          >
+            <svg
+              class="w-4 h-4"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="m4 12 8-8 8 8M6 10.5V19a1 1 0 0 0 1 1h3v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h3a1 1 0 0 0 1-1v-8.5"
+              />
+            </svg>
+          </a>
+        </li>
+        <li>
+          <div class="flex items-center space-x-1.5">
+            <svg
+              class="w-3.5 h-3.5 rtl:rotate-180 text-neutral-500"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="m9 5 7 7-7 7"
+              />
+            </svg>
+            <a
+              href="#"
+              class="inline-flex items-center text-sm font-medium text-neutral-700 hover:text-neutral-900"
+              >Projects</a
+            >
+          </div>
+        </li>
+        <li aria-current="page">
+          <div class="flex items-center space-x-1.5">
+            <svg
+              class="w-3.5 h-3.5 rtl:rotate-180 text-neutral-500"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="m9 5 7 7-7 7"
+              />
+            </svg>
+            <span
+              class="inline-flex items-center text-sm font-medium text-neutral-500"
+              >Flowbite</span
+            >
+          </div>
+        </li>
+      </ol>
+    </nav> -->
+
+    <!-- Data Section (Filters and Table) -->
+    <div
+      id="dataSection"
+      class="mx-auto max-w-2xl mb-6 rounded-xl bg-white p-6 shadow-sm custom_width"
+      style="display: none"
+    >
+      <!-- Filter Chips -->
+      <div id="filterChipsContainer" class="mb-6" style="display: none">
+        <p class="text-sm text-neutral-500">Loading filters...</p>
+      </div>
+
+      <!-- Table -->
+      <div id="tableContainer">
+        <div id="tableHeaderContainer"></div>
+        <div id="tableBodyContainer" class="max-h-96 overflow-y-auto">
+          <p class="text-sm text-neutral-500">Loading data...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- unify comments and suggestions -->
+    <!-- Comments and Suggestions -->
+    <div
+      id="insightsSection"
+      class="mx-auto max-w-2xl rounded-xl bg-white p-4 shadow-sm custom_width"
+      style="display: none"
+    >
+      <!-- Comments -->
+      <div id="commentsContainer" class="mb-6" style="display: none">
+        <h2 class="mb-3 text-sm font-semibold text-neutral-900">
+          Observations
+        </h2>
+        <ul id="commentsList" class="divide-y divide-neutral-200">
+          <li class="px-2 py-3">
+            <p class="text-sm text-neutral-500">Loading Observations...</p>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Suggestions -->
+      <div id="suggestionsContainer" style="display: none">
+        <h2 class="mb-3 text-sm font-semibold text-neutral-900">
+          Follow-up Questions
+        </h2>
+        <ul id="suggestionsList" class="divide-y divide-neutral-200">
+          <li class="px-2 py-3">
+            <p class="text-sm text-neutral-500">
+              Loading follow-up questions...
+            </p>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <script>
+      const editor = document.getElementById("editor");
+      const sendBtn = document.getElementById("sendBtn");
+
+      // Global state object
+      let appState = {
+        question: "",
+        filters: {},
+        group_by: null,
+        sorting: {
+          order_by: null,
+          order: "asc",
+          limit: 10,
+          offset: 0,
+        },
+        comments: [],
+        suggestions: [],
+        result: [],
+      };
+
+      // Track selected grouped values
+      let selectedGroupedValues = new Set();
+
+      // Flag to enable/disable hover effects
+      let hoverEffectsEnabled = false;
+
+      // Global hover state object
+      let hoverState = {
+        cellHover: {
+          columnName: "",
+          cellValue: "",
+          groupByColumn: "",
+          groupByValue: "",
+        },
+        filterHover: {
+          filterName: "",
+          filterValue: "",
+        },
+        sortingHover: {
+          columnName: "",
+          arrowPosition: "",
+        },
+        groupbyHover: {
+          columnName: "",
+        },
+      };
+
+      // State synchronization flag to prevent infinite loops
+      let isSyncing = false;
+
+      // Central state watcher - sends entire state to backend and updates UI
+      async function syncState() {
+        if (isSyncing) return;
+
+        isSyncing = true;
+        try {
+          // Ensure filters is always an object
+          if (!appState.filters) {
+            appState.filters = {};
+          }
+
+          const response = await fetch("http://127.0.0.1:8006/state", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(appState),
+          });
+
+          if (response.ok) {
+            const newState = await response.json();
+            appState = { ...newState };
+            renderAllSections();
+            console.log("State synced:", appState);
+          } else {
+            // Try to get detailed error message
+            let errorMsg = response.statusText;
+            try {
+              const errorData = await response.json();
+              errorMsg = errorData.detail || JSON.stringify(errorData);
+            } catch (e) {
+              // Ignore parsing errors
+            }
+            console.error("Failed to sync state:", errorMsg);
+            console.error("Sent payload:", JSON.stringify(appState, null, 2));
+          }
+        } catch (error) {
+          console.error("Error syncing state:", error);
+        } finally {
+          isSyncing = false;
+        }
+      }
+
+      editor.addEventListener("input", () => {
+        editor.style.height = "auto";
+        editor.style.height = editor.scrollHeight + "px";
+      });
+
+      sendBtn.addEventListener("click", async () => {
+        const text = editor.innerText.trim();
+        if (!text) return;
+
+        // Update appState with the question
+        appState.question = text;
+        console.log("Question submitted:", text);
+
+        // Sync state with backend
+        await syncState();
+      });
+
+      // Fetch state from backend
+      async function fetchState() {
+        try {
+          const response = await fetch("http://127.0.0.1:8006/state", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(appState),
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            appState = { ...data };
+            renderAllSections();
+          } else {
+            console.error("Failed to fetch state:", response.statusText);
+          }
+        } catch (error) {
+          console.error("Error fetching state:", error);
+        }
+      }
+
+      // Render all sections based on current state
+      function renderAllSections() {
+        // renderBreadcrumbs();
+        renderFilterChips();
+        renderTable();
+        renderComments();
+        renderSuggestions();
+      }
+
+      // Render breadcrumbs from state
+      // function renderBreadcrumbs() {
+      //   const breadcrumbNav = document.getElementById("breadcrumbsNav");
+      //   const breadcrumbOl = breadcrumbNav.querySelector("ol");
+
+      //   if (!appState.group_by) {
+      //     breadcrumbNav.style.display = "none";
+      //     return;
+      //   }
+
+      //   breadcrumbNav.style.display = "block";
+
+      //   let breadcrumbsHTML = `
+      //     <li class="inline-flex items-center">
+      //       <a
+      //         href="#"
+      //         class="inline-flex items-center text-sm font-medium text-neutral-700 hover:text-neutral-900"
+      //         aria-label="Home"
+      //       >
+      //         <svg
+      //           class="w-4 h-4"
+      //           aria-hidden="true"
+      //           xmlns="http://www.w3.org/2000/svg"
+      //           width="24"
+      //           height="24"
+      //           fill="none"
+      //           viewBox="0 0 24 24"
+      //         >
+      //           <path
+      //             stroke="currentColor"
+      //             stroke-linecap="round"
+      //             stroke-linejoin="round"
+      //             stroke-width="2"
+      //             d="m4 12 8-8 8 8M6 10.5V19a1 1 0 0 0 1 1h3v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h3a1 1 0 0 0 1-1v-8.5"
+      //           />
+      //         </svg>
+      //       </a>
+      //     </li>
+      //   `;
+
+      //   const groupByLabel =
+      //     appState.group_by.charAt(0).toUpperCase() +
+      //     appState.group_by.slice(1);
+
+      //   breadcrumbsHTML += `
+      //     <li aria-current="page">
+      //       <div class="flex items-center space-x-1.5">
+      //         <svg
+      //           class="w-3.5 h-3.5 rtl:rotate-180 text-neutral-500"
+      //           aria-hidden="true"
+      //           xmlns="http://www.w3.org/2000/svg"
+      //           width="24"
+      //           height="24"
+      //           fill="none"
+      //           viewBox="0 0 24 24"
+      //         >
+      //           <path
+      //             stroke="currentColor"
+      //             stroke-linecap="round"
+      //             stroke-linejoin="round"
+      //             stroke-width="2"
+      //             d="m9 5 7 7-7 7"
+      //           />
+      //         </svg>
+      //         <span class="inline-flex items-center text-sm font-medium text-neutral-500">${groupByLabel}</span>
+      //       </div>
+      //     </li>
+      //   `;
+
+      //   breadcrumbOl.innerHTML = breadcrumbsHTML;
+      // }
+
+      // Render filter chips from state
+      function renderFilterChips() {
+        const dataSection = document.getElementById("dataSection");
+        const filterChipsContainer = document.getElementById(
+          "filterChipsContainer"
+        );
+
+        if (!appState.filters || Object.keys(appState.filters).length === 0) {
+          filterChipsContainer.style.display = "none";
+        } else {
+          filterChipsContainer.style.display = "block";
+          dataSection.style.display = "block";
+
+          let filtersHTML = '<div class="flex flex-wrap gap-2">';
+
+          for (const [key, values] of Object.entries(appState.filters)) {
+            if (values && values.length > 0) {
+              filtersHTML += `
+              <div class="flex items-start gap-2" id="filter-group-${key}">
+                <span class="text-sm font-medium text-neutral-700 capitalize mt-1.5">${key}:</span>
+                <div class="flex flex-wrap gap-2" id="filter-chips-${key}">
+            `;
+
+              values.forEach((value) => {
+                filtersHTML += `
+                <button
+                  class="inline-flex items-center gap-1.5 rounded-full bg-neutral-100 px-3 py-1.5 text-sm text-neutral-800 hover:bg-neutral-200 transition-colors"
+                  onclick="removeFilterChip(this, '${key}', '${value}')"
+                  onmouseover="handleFilterHover('${key}', '${value}')"
+                  onmouseleave="restoreOriginalQuestion()"
+                >
+                  <span>${value}</span>
+                  <svg class="h-3.5 w-3.5 text-neutral-500" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
+                  </svg>
+                </button>
+              `;
+              });
+
+              filtersHTML += `
+                </div>
+              </div>
+            `;
+            }
+          }
+
+          filtersHTML += "</div>";
+          filterChipsContainer.innerHTML = filtersHTML;
+        }
+
+        // Hide data section if both filters and table are empty
+        const hasActiveFilters =
+          appState.filters &&
+          Object.values(appState.filters).some(
+            (arr) => Array.isArray(arr) && arr.length > 0
+          );
+        if (
+          !hasActiveFilters &&
+          (!appState.result || appState.result.length === 0)
+        ) {
+          dataSection.style.display = "none";
+        }
+      }
+
+      // Remove filter chip
+      async function removeFilterChip(button, filterKey, value) {
+        // Remove value from state
+        if (appState.filters[filterKey]) {
+          appState.filters[filterKey] = appState.filters[filterKey].filter(
+            (v) => v.toString() !== value.toString()
+          );
+
+          // Remove key if array is empty
+          if (appState.filters[filterKey].length === 0) {
+            delete appState.filters[filterKey];
+          }
+        }
+
+        console.log("Filter removed:", filterKey, value);
+
+        // Sync state with backend
+        await syncState();
+      }
+
+      // Add selected grouped values to filters
+      async function addSelectedToFilters() {
+        if (!appState.group_by || selectedGroupedValues.size === 0) return;
+
+        const groupByKey = appState.group_by.toLowerCase();
+
+        // Initialize filter array if it doesn't exist
+        if (!appState.filters[groupByKey]) {
+          appState.filters[groupByKey] = [];
+        }
+
+        // Add selected values to filters
+        selectedGroupedValues.forEach((value) => {
+          // Convert to number if it's a year
+          const numValue = Number(value);
+          const filterValue =
+            !isNaN(numValue) && groupByKey === "years" ? numValue : value;
+
+          if (!appState.filters[groupByKey].includes(filterValue)) {
+            appState.filters[groupByKey].push(filterValue);
+          }
+        });
+
+        // Clear selection
+        selectedGroupedValues.clear();
+
+        console.log(
+          "Added selected values to filters:",
+          appState.filters[groupByKey]
+        );
+
+        // Sync state with backend
+        await syncState();
+      }
+
+      // Toggle checkbox for grouped value
+      function toggleGroupedValue(value, checkbox) {
+        if (checkbox.checked) {
+          selectedGroupedValues.add(value);
+        } else {
+          selectedGroupedValues.delete(value);
+        }
+        console.log("Selected values:", Array.from(selectedGroupedValues));
+
+        // Re-render table to update button visibility
+        renderTable();
+      }
+
+      // Handle column header click to update group_by
+      async function handleGroupByClick(header) {
+        // Update group_by to the clicked column (lowercase)
+        appState.group_by = header.toLowerCase();
+
+        console.log("Group by updated to:", appState.group_by);
+
+        // Sync state with backend
+        await syncState();
+      }
+
+      // Handle column header click to change sorting
+      async function handleSortClick(header) {
+        // Toggle sort order or set new column
+        if (
+          appState.sorting.order_by &&
+          appState.sorting.order_by.toLowerCase() === header.toLowerCase()
+        ) {
+          appState.sorting.order =
+            appState.sorting.order === "asc" ? "desc" : "asc";
+        } else {
+          appState.sorting.order_by = header;
+          appState.sorting.order = "asc";
+        }
+
+        console.log("Sorting changed:", appState.sorting);
+
+        // Sync state with backend
+        await syncState();
+      }
+
+      // Get sort arrow SVG
+      function getSortArrow(header, isActive, order) {
+        if (!isActive) {
+          return `
+            <svg class="w-3 h-3 text-neutral-400" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 3a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02L10 4.852 7.3 7.76a.75.75 0 01-1.1-1.02l3.25-3.5A.75.75 0 0110 3zm-3.76 9.2a.75.75 0 011.06.04l2.7 2.908 2.7-2.908a.75.75 0 111.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0l-3.25-3.5a.75.75 0 01.04-1.06z" clip-rule="evenodd" />
+            </svg>
+          `;
+        }
+
+        if (order === "asc") {
+          return `
+            <svg class="w-3 h-3 text-neutral-900" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 17a.75.75 0 01-.75-.75V5.612L5.29 9.77a.75.75 0 01-1.08-1.04l5.25-5.5a.75.75 0 011.08 0l5.25 5.5a.75.75 0 11-1.08 1.04l-3.96-4.158V16.25A.75.75 0 0110 17z" clip-rule="evenodd" />
+            </svg>
+          `;
+        } else {
+          return `
+            <svg class="w-3 h-3 text-neutral-900" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 3a.75.75 0 01.75.75v10.638l3.96-4.158a.75.75 0 111.08 1.04l-5.25 5.5a.75.75 0 01-1.08 0l-5.25-5.5a.75.75 0 111.08-1.04l3.96 4.158V3.75A.75.75 0 0110 3z" clip-rule="evenodd" />
+            </svg>
+          `;
+        }
+      }
+
+      // Handle table cell click to add to filters
+      async function handleCellClick(header, value) {
+        // Don't add if value is "0" or empty
+        if (!value || value === "0") return;
+
+        // Convert header to lowercase for filter key
+        const filterKey = header.toLowerCase();
+
+        // If there's a current group_by, add its value to filters
+        if (appState.group_by) {
+          const currentGroupByKey = appState.group_by.toLowerCase();
+
+          // Initialize filter array if it doesn't exist
+          if (!appState.filters[currentGroupByKey]) {
+            appState.filters[currentGroupByKey] = [];
+          }
+
+          // Get the current grouped value from the clicked row
+          // We need to find which row was clicked and get its group_by column value
+          // Since we're already in the context of the clicked cell, we need to pass the row data
+          // For now, we'll handle this by updating the onclick to include row data
+        }
+
+        // Update group_by to the clicked column (lowercase)
+        appState.group_by = header.toLowerCase();
+
+        // Initialize filter array if it doesn't exist
+        if (!appState.filters[filterKey]) {
+          appState.filters[filterKey] = [];
+        }
+
+        // Convert to number if it's a year or numeric value
+        const numValue = Number(value);
+        const filterValue =
+          !isNaN(numValue) && filterKey === "years" ? numValue : value;
+
+        // Check if value already exists in filter
+        if (!appState.filters[filterKey].includes(filterValue)) {
+          appState.filters[filterKey].push(filterValue);
+          console.log("Filter added:", filterKey, filterValue);
+          console.log("Group by updated to:", appState.group_by);
+          console.log("Current state:", appState);
+          // Re-render all sections
+          renderAllSections();
+        }
+      }
+
+      // Reset all hover states
+      function resetHoverState() {
+        if (!hoverEffectsEnabled) return;
+
+        hoverState = {
+          cellHover: {
+            columnName: "",
+            cellValue: "",
+            groupByColumn: "",
+            groupByValue: "",
+          },
+          filterHover: {
+            filterName: "",
+            filterValue: "",
+          },
+          sortingHover: {
+            columnName: "",
+            arrowPosition: "",
+          },
+          groupbyHover: {
+            columnName: "",
+          },
+        };
+      }
+
+      // Send hover state to backend
+      async function sendHoverState() {
+        if (!hoverEffectsEnabled) return;
+
+        // Show loading text in editor
+        editor.innerText = "loading user question...";
+
+        try {
+          const response = await fetch("http://127.0.0.1:8006/hover_event", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(hoverState),
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            console.log("Backend hover response:", data.message);
+
+            // Replace editor text with backend response
+            editor.innerText = data.message;
+          } else {
+            console.error("Failed to send hover state:", response.statusText);
+            editor.innerText = "Error loading question";
+          }
+        } catch (error) {
+          console.error("Error sending hover state:", error);
+          editor.innerText = "Error loading question";
+        }
+      }
+
+      // Restore original question from appState
+      function restoreOriginalQuestion() {
+        if (!hoverEffectsEnabled) return;
+
+        editor.innerText = appState.question || "";
+      }
+
+      // Handle table cell hover
+      function handleCellHover(header, value, rowJson) {
+        if (!hoverEffectsEnabled) return;
+
+        // Reset all previous hover states
+        resetHoverState();
+
+        // Parse the row data - handle both escaped and unescaped quotes
+        let row;
+        try {
+          // First try with unescaped quotes
+          row = JSON.parse(rowJson.replace(/&quot;/g, '"'));
+        } catch (e) {
+          try {
+            // Fallback to direct parse
+            row = JSON.parse(rowJson);
+          } catch (e2) {
+            console.error("Failed to parse row JSON:", rowJson, e2);
+            return;
+          }
+        }
+
+        // Get the grouped column value if it exists
+        let groupedValue = "";
+        if (appState.group_by) {
+          // The group_by value is stored with capital first letter in the row
+          // e.g., appState.group_by = "authors" but row key is "Authors"
+          const groupByKey =
+            appState.group_by.charAt(0).toUpperCase() +
+            appState.group_by.slice(1);
+          groupedValue = row[groupByKey] ? row[groupByKey].toString() : "";
+        }
+
+        // Update hover state
+        hoverState.cellHover = {
+          columnName: header,
+          cellValue: value.toString(),
+          groupByColumn: appState.group_by || "",
+          groupByValue: groupedValue,
+        };
+
+        console.log(
+          "Cell Hover State:",
+          JSON.parse(JSON.stringify(hoverState))
+        );
+
+        // Send to backend
+        sendHoverState();
+      }
+
+      // Handle filter chip hover
+      function handleFilterHover(filterName, filterValue) {
+        if (!hoverEffectsEnabled) return;
+
+        // Reset all previous hover states
+        resetHoverState();
+
+        hoverState.filterHover = {
+          filterName: filterName,
+          filterValue: filterValue,
+        };
+
+        console.log("Hover State:", JSON.parse(JSON.stringify(hoverState)));
+
+        // Send to backend
+        sendHoverState();
+      }
+
+      // Handle sort button hover
+      function handleSortHover(columnName) {
+        if (!hoverEffectsEnabled) return;
+
+        // Reset all previous hover states
+        resetHoverState();
+
+        const isActive =
+          appState.sorting.order_by &&
+          appState.sorting.order_by.toLowerCase() === columnName.toLowerCase();
+        const arrowPosition = isActive ? appState.sorting.order : "neutral";
+
+        hoverState.sortingHover = {
+          columnName: columnName,
+          arrowPosition: arrowPosition,
+        };
+
+        console.log("Hover State:", JSON.parse(JSON.stringify(hoverState)));
+
+        // Send to backend
+        sendHoverState();
+      }
+
+      // Handle group by button hover
+      function handleGroupByHover(columnName) {
+        if (!hoverEffectsEnabled) return;
+
+        // Reset all previous hover states
+        resetHoverState();
+
+        hoverState.groupbyHover = {
+          columnName: columnName,
+        };
+
+        console.log("Hover State:", JSON.parse(JSON.stringify(hoverState)));
+
+        // Send to backend
+        sendHoverState();
+      }
+
+      // Render table from state
+      function renderTable() {
+        const dataSection = document.getElementById("dataSection");
+        const tableHeaderContainer = document.getElementById(
+          "tableHeaderContainer"
+        );
+        const tableBodyContainer =
+          document.getElementById("tableBodyContainer");
+
+        if (!appState.result || appState.result.length === 0) {
+          tableHeaderContainer.innerHTML = "";
+          tableBodyContainer.innerHTML = "";
+        } else {
+          dataSection.style.display = "block";
+
+          const headers = Object.keys(appState.result[0]);
+
+          // Render fixed header table
+          let headerHTML =
+            '<table class="w-full table-fixed"><thead><tr class="border-b border-neutral-200">';
+
+          // Generate headers with sorting indicators
+          headers.forEach((header) => {
+            // Case-insensitive comparison for sorting and grouping
+            const isActive =
+              appState.sorting.order_by &&
+              appState.sorting.order_by.toLowerCase() === header.toLowerCase();
+            const isGrouped =
+              appState.group_by &&
+              appState.group_by.toLowerCase() === header.toLowerCase();
+            const headerLabel =
+              header.charAt(0).toUpperCase() + header.slice(1);
+
+            // Set fixed width for all columns
+            const widthStyle = isGrouped
+              ? 'style="width: 150px;"'
+              : 'style="width: 10px;"';
+
+            if (isGrouped) {
+              // Grouped column - normal horizontal layout
+              headerHTML += `
+                <th class="pb-3 text-left align-bottom" ${widthStyle}>
+                  <div class="flex items-center gap-2">
+                    <button 
+                      onclick="handleGroupByClick('${header}')"
+                      onmouseover="handleGroupByHover('${header}')"
+                      onmouseleave="restoreOriginalQuestion()"
+                      class="inline-flex items-center text-sm font-semibold text-neutral-900 hover:text-neutral-700 transition-colors cursor-pointer"
+                      title="Group by ${headerLabel}"
+                    >
+                      ${headerLabel}
+                    </button>
+                    <button 
+                      onclick="handleSortClick('${header}')"
+                      onmouseover="handleSortHover('${header}')"
+                      onmouseleave="restoreOriginalQuestion()"
+                      class="inline-flex items-center justify-center hover:bg-neutral-100 rounded p-1 transition-colors"
+                      title="Sort by ${headerLabel}"
+                    >
+                      ${getSortArrow(header, isActive, appState.sorting.order)}
+                    </button>
+                    ${
+                      selectedGroupedValues.size > 0
+                        ? `
+                      <button
+                        onclick="addSelectedToFilters()"
+                        class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-white bg-neutral-800 rounded hover:bg-neutral-700 transition-colors"
+                        title="Add selected to filters"
+                      >
+                        <svg class="w-3 h-3" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
+                        </svg>
+                        Add (${selectedGroupedValues.size})
+                      </button>
+                    `
+                        : ""
+                    }
+                    ${
+                      appState.group_by
+                        ? `
+                      <span class="text-xs text-neutral-600 font-medium">
+                        ${appState.result.length} ${
+                            appState.result.length === 1 ? "result" : "results"
+                          }
+                      </span>
+                    `
+                        : ""
+                    }
+                  </div>
+                </th>
+              `;
+            } else {
+              // Non-grouped column - vertical layout with rotation
+              headerHTML += `
+                <th class="pb-3 text-left align-bottom" ${widthStyle}>
+                  <div class="relative h-full flex items-end justify-start">
+                    <div class="flex items-center gap-1" style="transform: rotate(-30deg); transform-origin: left bottom; white-space: nowrap;">
+                      <button 
+                        onclick="handleGroupByClick('${header}')"
+                        onmouseover="handleGroupByHover('${header}')"
+                        onmouseleave="restoreOriginalQuestion()"
+                        class="inline-flex items-center text-sm font-semibold text-neutral-900 hover:text-neutral-700 transition-colors cursor-pointer"
+                        title="Group by ${headerLabel}"
+                      >
+                        ${headerLabel}
+                      </button>
+                      <button 
+                        onclick="handleSortClick('${header}')"
+                        onmouseover="handleSortHover('${header}')"
+                        onmouseleave="restoreOriginalQuestion()"
+                        class="inline-flex items-center justify-center hover:bg-neutral-100 rounded p-0.5 transition-colors"
+                        title="Sort by ${headerLabel}"
+                      >
+                        ${getSortArrow(
+                          header,
+                          isActive,
+                          appState.sorting.order
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </th>
+              `;
+            }
+          });
+
+          headerHTML += "</tr></thead></table>";
+          tableHeaderContainer.innerHTML = headerHTML;
+
+          // Render scrollable body table
+          let bodyHTML =
+            '<table class="w-full table-fixed"><tbody class="divide-y divide-neutral-200">';
+
+          // Generate rows with clickable cells
+          appState.result.forEach((row, rowIndex) => {
+            bodyHTML += '<tr class="hover:bg-neutral-50">';
+            headers.forEach((header) => {
+              const isGrouped =
+                appState.group_by &&
+                appState.group_by.toLowerCase() === header.toLowerCase();
+              const widthStyle = isGrouped
+                ? 'style="width: 150px;"'
+                : 'style="width: 10px;"';
+              const cellClass = isGrouped
+                ? "cursor-pointer hover:bg-neutral-100"
+                : "overflow-hidden text-ellipsis cursor-pointer hover:bg-neutral-100";
+
+              // Pass the entire row as JSON to handleCellClick for context
+              const rowJson = JSON.stringify(row).replace(/"/g, "&quot;");
+
+              if (isGrouped) {
+                // Grouped column with checkbox
+                const cellValue = row[header];
+                const isChecked = selectedGroupedValues.has(
+                  cellValue.toString()
+                );
+                bodyHTML += `
+                  <td class="py-3 text-sm text-neutral-800 ${cellClass}" ${widthStyle} onmouseover="handleCellHover('${header}', '${cellValue}', '${rowJson}')" onmouseleave="restoreOriginalQuestion()">
+                    <div class="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        ${isChecked ? "checked" : ""}
+                        onchange="toggleGroupedValue('${cellValue}', this)"
+                        onclick="event.stopPropagation()"
+                        class="w-4 h-4 text-neutral-900 bg-neutral-100 border-neutral-300 rounded focus:ring-neutral-500 cursor-pointer"
+                      />
+                      <span onclick="handleCellClickWithRow('${header}', '${cellValue}', '${rowJson}')">${cellValue}</span>
+                    </div>
+                  </td>
+                `;
+              } else {
+                // Non-grouped column - regular cell
+                bodyHTML += `<td class="py-3 text-sm text-neutral-800 ${cellClass}" ${widthStyle} onclick="handleCellClickWithRow('${header}', '${row[header]}', '${rowJson}')" onmouseover="handleCellHover('${header}', '${row[header]}', '${rowJson}')" onmouseleave="restoreOriginalQuestion()">${row[header]}</td>`;
+              }
+            });
+            bodyHTML += "</tr>";
+          });
+
+          bodyHTML += "</tbody></table>";
+          tableBodyContainer.innerHTML = bodyHTML;
+        }
+
+        // Hide data section if both filters and table are empty
+        const hasActiveFilters =
+          appState.filters &&
+          Object.values(appState.filters).some(
+            (arr) => Array.isArray(arr) && arr.length > 0
+          );
+        if (
+          !hasActiveFilters &&
+          (!appState.result || appState.result.length === 0)
+        ) {
+          dataSection.style.display = "none";
+        }
+      }
+
+      // Handle table cell click with full row context
+      async function handleCellClickWithRow(header, value, rowJson) {
+        console.log("=== handleCellClickWithRow called ===");
+        console.log("Header:", header);
+        console.log("Value:", value);
+
+        // Don't add if value is "0" or empty
+        if (!value || value === "0") {
+          console.log("Skipping: value is 0 or empty");
+          return;
+        }
+
+        // Parse the row data
+        const row = JSON.parse(rowJson.replace(/&quot;/g, '"'));
+        console.log("Parsed row:", row);
+
+        // Convert header to lowercase for filter key
+        const filterKey = header.toLowerCase();
+
+        // Ensure filters object exists
+        if (!appState.filters) {
+          appState.filters = {};
+        }
+
+        // If there's a current group_by AND we're clicking on a different column
+        if (
+          appState.group_by &&
+          appState.group_by.toLowerCase() !== filterKey
+        ) {
+          console.log(
+            "Current group_by exists and is different from clicked column"
+          );
+          const currentGroupByKey = appState.group_by.toLowerCase();
+
+          // The row keys are capitalized (e.g., "Authors"), but appState.group_by is lowercase (e.g., "authors")
+          // So we need to capitalize the first letter to match the row key
+          const groupByKeyCapitalized =
+            appState.group_by.charAt(0).toUpperCase() +
+            appState.group_by.slice(1);
+
+          console.log("Looking for row key:", groupByKeyCapitalized);
+          console.log("Available row keys:", Object.keys(row));
+
+          const currentGroupByValue = row[groupByKeyCapitalized];
+          console.log("Current group_by value:", currentGroupByValue);
+
+          // Check if currentGroupByValue is undefined
+          if (currentGroupByValue === undefined) {
+            console.error(
+              "Could not find value for key:",
+              groupByKeyCapitalized,
+              "in row:",
+              row
+            );
+            // Try to find the right key (case-insensitive)
+            const rowKeys = Object.keys(row);
+            const matchingKey = rowKeys.find(
+              (k) => k.toLowerCase() === currentGroupByKey
+            );
+            if (matchingKey) {
+              console.log(
+                "Found matching key with different case:",
+                matchingKey
+              );
+              const correctValue = row[matchingKey];
+
+              // Initialize filter array if it doesn't exist
+              if (!appState.filters[currentGroupByKey]) {
+                appState.filters[currentGroupByKey] = [];
+              }
+
+              // Convert to number if needed
+              const numValue = Number(correctValue);
+              const filterValue =
+                !isNaN(numValue) && currentGroupByKey === "years"
+                  ? numValue
+                  : correctValue;
+
+              // Add current group_by value to filters if not already present
+              if (!appState.filters[currentGroupByKey].includes(filterValue)) {
+                appState.filters[currentGroupByKey].push(filterValue);
+                console.log(
+                  "Added grouped filter:",
+                  currentGroupByKey,
+                  filterValue
+                );
+              }
+            }
+          } else {
+            // Initialize filter array if it doesn't exist
+            if (!appState.filters[currentGroupByKey]) {
+              appState.filters[currentGroupByKey] = [];
+            }
+
+            // Convert to number if needed
+            const numValue = Number(currentGroupByValue);
+            const filterValue =
+              !isNaN(numValue) && currentGroupByKey === "years"
+                ? numValue
+                : currentGroupByValue;
+
+            // Add current group_by value to filters if not already present
+            if (!appState.filters[currentGroupByKey].includes(filterValue)) {
+              appState.filters[currentGroupByKey].push(filterValue);
+              console.log(
+                "Added grouped filter:",
+                currentGroupByKey,
+                filterValue
+              );
+            }
+          }
+        }
+
+        // Update group_by to the clicked column (lowercase)
+        appState.group_by = header.toLowerCase();
+
+        console.log("Group by updated to:", appState.group_by);
+        console.log(
+          "Current state before sync:",
+          JSON.stringify(appState, null, 2)
+        );
+
+        // Sync state with backend
+        await syncState();
+      }
+
+      // Render comments from state
+      function renderComments() {
+        const insightsSection = document.getElementById("insightsSection");
+        const commentsContainer = document.getElementById("commentsContainer");
+        const commentsList = document.getElementById("commentsList");
+
+        if (!appState.comments || appState.comments.length === 0) {
+          commentsContainer.style.display = "none";
+        } else {
+          commentsContainer.style.display = "block";
+          insightsSection.style.display = "block";
+
+          let commentsHTML = "";
+
+          appState.comments.forEach((comment) => {
+            // Convert markdown bold (**text**) to HTML
+            const formattedComment = comment.replace(
+              /\*\*(.*?)\*\*/g,
+              "<strong>$1</strong>"
+            );
+            commentsHTML += `
+            <li class="px-2 py-3">
+              <p class="text-sm text-neutral-800">${formattedComment}</p>
+            </li>
+          `;
+          });
+
+          commentsList.innerHTML = commentsHTML;
+        }
+
+        // Hide insights section if both comments and suggestions are empty
+        if (
+          (!appState.comments || appState.comments.length === 0) &&
+          (!appState.suggestions || appState.suggestions.length === 0)
+        ) {
+          insightsSection.style.display = "none";
+        }
+      }
+
+      // Handle suggestion click
+      async function handleSuggestionClick(suggestion) {
+        // Remove HTML tags to get plain text
+        const plainText = suggestion.replace(/<[^>]*>/g, "");
+
+        // Update editor with suggestion text
+        editor.innerText = plainText;
+
+        // Update appState question
+        appState.question = plainText;
+
+        console.log("Suggestion clicked:", plainText);
+
+        // Scroll to top of page
+        window.scrollTo({ top: 0, behavior: "smooth" });
+
+        // Sync state with backend
+        await syncState();
+      }
+
+      // Render suggestions from state
+      function renderSuggestions() {
+        const insightsSection = document.getElementById("insightsSection");
+        const suggestionsContainer = document.getElementById(
+          "suggestionsContainer"
+        );
+        const suggestionsList = document.getElementById("suggestionsList");
+
+        if (!appState.suggestions || appState.suggestions.length === 0) {
+          suggestionsContainer.style.display = "none";
+        } else {
+          suggestionsContainer.style.display = "block";
+          insightsSection.style.display = "block";
+
+          let suggestionsHTML = "";
+
+          appState.suggestions.forEach((suggestion) => {
+            // Convert markdown bold (**text**) to HTML
+            const formattedSuggestion = suggestion.replace(
+              /\*\*(.*?)\*\*/g,
+              "<strong>$1</strong>"
+            );
+            suggestionsHTML += `
+            <li>
+              <a
+                href="#"
+                class="flex items-start gap-3 rounded-md px-2 py-3 hover:bg-neutral-50"
+                onclick="event.preventDefault(); handleSuggestionClick('${suggestion.replace(
+                  /'/g,
+                  "\\'"
+                )}');"
+              >
+                <svg
+                  class="mt-0.5 h-5 w-5 text-neutral-500"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+                <span class="text-sm text-neutral-800">${formattedSuggestion}</span>
+              </a>
+            </li>
+          `;
+          });
+
+          suggestionsList.innerHTML = suggestionsHTML;
+        }
+
+        // Hide insights section if both comments and suggestions are empty
+        if (
+          (!appState.comments || appState.comments.length === 0) &&
+          (!appState.suggestions || appState.suggestions.length === 0)
+        ) {
+          insightsSection.style.display = "none";
+        }
+      }
+
+      // Toggle hover effects (call from browser console)
+      function toggleHoverEffects() {
+        hoverEffectsEnabled = !hoverEffectsEnabled;
+        console.log(
+          `Hover effects ${hoverEffectsEnabled ? "enabled" : "disabled"}`
+        );
+
+        // Restore original question when disabled
+        if (!hoverEffectsEnabled) {
+          restoreOriginalQuestion();
+        }
+
+        return hoverEffectsEnabled;
+      }
+
+      // Make toggleHoverEffects globally accessible
+      window.toggleHoverEffects = toggleHoverEffects;
+
+      // Initialize page by fetching state
+      async function initializePage() {
+        await fetchState();
+      }
+
+      initializePage();
+    </script>
+  </body>
+</html>
